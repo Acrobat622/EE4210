@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.Vector;
 
 public class ServerProcess {
-	private static String ip;
+	private static String host;
 	private static int port;
 	private static File path;
 	private Vector<File> fileList;
@@ -21,8 +21,8 @@ public class ServerProcess {
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
 	
-	public ServerProcess(String ip, int port, File path) {
-		this.ip = ip;
+	public ServerProcess(String host, int port, File path) {
+		this.host = host;
 		this.port = port;
 		this.path = path;
 		this.fileList = new Vector<File>();
