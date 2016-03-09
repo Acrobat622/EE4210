@@ -50,4 +50,12 @@ public class Connection {
 	public String getRemoteAddress() {
 		return s.getInetAddress().toString();
 	}
+	
+	public void closeConnection() {
+		try {
+		    s.close();
+		} catch (IOException e) {
+			System.out.println("Unable to close connection, probably lost");
+		}
+	}
 }

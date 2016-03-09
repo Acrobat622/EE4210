@@ -21,7 +21,6 @@ public class FileSync {
 		if (!isServer)
 			try {
 			   connection = new Connection(remote, PORT);
-			   System.out.println("Connected to " + connection.getRemoteAddress());
 			} catch (Exception e) {
 				try {
 				    connection = new Connection(PORT);
@@ -37,7 +36,13 @@ public class FileSync {
 				System.out.println("Unable to bind port, exiting");
 				System.exit(1);
 			}
+
+		System.out.println("Connected to " + connection.getRemoteAddress());
 		
+		// stub for non-exiting
+		while (true) {
+			
+		}
 	}
 
 	private static void printWelcomeMessage(String[] args) {
