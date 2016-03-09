@@ -10,15 +10,16 @@ public class Connection {
 	private static final int TIMEOUT = 1000;
 	private static String host;
 	private static int port;
+	private static boolean isServer;
     private Socket s;
     private ServerSocket ss;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
-	
 	// client constructor
 	public Connection(String host, int port) throws IOException {
 			s = new Socket();
 			s.connect(new InetSocketAddress(host, port), TIMEOUT);
+			isServer = false;
 			//s.setSoTimeout(TIMEOUT);
 			oos = new ObjectOutputStream(s.getOutputStream());
 			ois = new ObjectInputStream(s.getInputStream());
@@ -29,15 +30,20 @@ public class Connection {
 		ss = new ServerSocket(port);
 		s = ss.accept();
 		s.setSoTimeout(TIMEOUT);   //  timeout for connection
+		isServer = true;
 		oos = new ObjectOutputStream(s.getOutputStream());
 		ois = new ObjectInputStream(s.getInputStream());
 	}
 	
-	public void sendMessage(String message) throws IOException {
-		oos.writeObject(message);
+	public boolean isServer() {
+		return isServer;
 	}
 	
-	public String receiveMessage() {
+	public void sendObject(Object obj) throws IOException {
+		oos.writeObject(obj);
+	}
+	
+	public Object receiveObject() {
 		Object received = null;
 		try {
 			received = ois.readObject();
@@ -45,10 +51,7 @@ public class Connection {
 			System.out.println(e.getMessage());
 		}
 		
-		if (received instanceof String) 
-			return (String) received;
-		else
-			return "";
+		return received;
 	}
 	
 	public String getRemoteAddress() {

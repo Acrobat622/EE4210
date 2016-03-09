@@ -54,7 +54,7 @@ public class FileSync {
 			try {
 			    connection = new Connection(PORT);
 			} catch (Exception e) {
-				System.out.println("Unable to bind port" + PORT + ", exiting");
+				System.out.println("Unable to bind port " + PORT + ", exiting");
 				System.exit(1);
 			}
 	}
