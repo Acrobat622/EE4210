@@ -7,6 +7,7 @@ import java.net.*;
 import java.util.*;
 
 public class Connection {
+	private static final int TIMEOUT = 3000;
 	private static String host;
 	private static int port;
     private Socket s;
@@ -25,6 +26,7 @@ public class Connection {
 	public Connection(int port) throws Exception {
 		ss = new ServerSocket(port);
 		s = ss.accept();
+		s.setSoTimeout(TIMEOUT);   //  timeout for connection
 		oos = new ObjectOutputStream(s.getOutputStream());
 		ois = new ObjectInputStream(s.getInputStream());
 	}

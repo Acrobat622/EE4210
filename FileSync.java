@@ -18,6 +18,20 @@ public class FileSync {
 		printWelcomeMessage(args);
 		
 		
+		creaateNewConnection();
+
+		System.out.println("Connected to " + connection.getRemoteAddress());
+		
+		// stub for non-exiting
+		while (true) {
+			
+		}
+	}
+
+	/**
+	 * Creates new connection, whether it is a server or client socket
+	 */	 
+	private static void creaateNewConnection() {
 		if (!isServer)
 			try {
 			   connection = new Connection(remote, PORT);
@@ -36,13 +50,6 @@ public class FileSync {
 				System.out.println("Unable to bind port, exiting");
 				System.exit(1);
 			}
-
-		System.out.println("Connected to " + connection.getRemoteAddress());
-		
-		// stub for non-exiting
-		while (true) {
-			
-		}
 	}
 
 	private static void printWelcomeMessage(String[] args) {
