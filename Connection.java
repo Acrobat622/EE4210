@@ -46,4 +46,8 @@ public class Connection {
 		else
 			return "";
 	}
+	
+	public String getRemoteAddress() {
+		return s.getInetAddress().toString();
+	}
 }

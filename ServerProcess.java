@@ -29,14 +29,15 @@ public class ServerProcess {
 		this.fileNameList = new Vector<String>();
 	}
 	
-	private void getFileList() {
+	public void getFileList() {
 		this.fileList.addAll(Arrays.asList(path.listFiles()));
 	}
 	
-	private void getFileNameList() {
+	public void getFileNameList() {
 		for (File f: fileList) {
 			fileNameList.add(f.getName());
 		}
 		
 	}
+	
 }

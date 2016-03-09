@@ -11,11 +11,32 @@ public class FileSync {
 	private static boolean isServer = true;
 	private static String remote;
 	private static final File path = new File(FileSync.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+	private static Connection connection;
 	
 	public static void main(String[] args) {
 		checkArguments(args);
 		printWelcomeMessage(args);
 		
+		
+		if (!isServer)
+			try {
+			   connection = new Connection(remote, PORT);
+			   System.out.println("Connected to " + connection.getRemoteAddress());
+			} catch (Exception e) {
+				try {
+				    connection = new Connection(PORT);
+				} catch (Exception e2) {
+					System.out.println("Unable to bind port, exiting");
+					System.exit(1);
+				}
+			}
+		else
+			try {
+			    connection = new Connection(PORT);
+			} catch (Exception e) {
+				System.out.println("Unable to bind port, exiting");
+				System.exit(1);
+			}
 		
 	}
 
