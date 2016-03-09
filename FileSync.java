@@ -55,7 +55,7 @@ public class FileSync {
 		if (args.length == 0)
 			isServer = true;
 		else {
-			remote = args[1];
+			remote = args[0];
 			isServer = false;
 		}
 	}
