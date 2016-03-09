@@ -7,7 +7,7 @@ import java.net.*;
 import java.util.*;
 
 public class Connection {
-	private static final int TIMEOUT = 3000;
+	private static final int TIMEOUT = 1000;
 	private static String host;
 	private static int port;
     private Socket s;
@@ -16,14 +16,16 @@ public class Connection {
 	private ObjectInputStream ois;
 	
 	// client constructor
-	public Connection(String host, int port) throws Exception {
-			s = new Socket(host, port);
+	public Connection(String host, int port) throws IOException {
+			s = new Socket();
+			s.connect(new InetSocketAddress(host, port), TIMEOUT);
+			//s.setSoTimeout(TIMEOUT);
 			oos = new ObjectOutputStream(s.getOutputStream());
 			ois = new ObjectInputStream(s.getInputStream());
 	}
 	
 	// server constructor
-	public Connection(int port) throws Exception {
+	public Connection(int port) throws IOException {
 		ss = new ServerSocket(port);
 		s = ss.accept();
 		s.setSoTimeout(TIMEOUT);   //  timeout for connection
