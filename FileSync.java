@@ -31,6 +31,9 @@ public class FileSync {
 
 	/**
 	 * Creates new connection, whether it is a server or client socket
+	 * If the programme is served as a client and the connection cannot
+	 * be established after the timeout, it will enter server mode which 
+	 * listens to connection requests
 	 */	 
 	private static void creaateNewConnection() {
 		if (!isServer)
@@ -51,7 +54,7 @@ public class FileSync {
 			try {
 			    connection = new Connection(PORT);
 			} catch (Exception e) {
-				System.out.println("Unable to bind port, exiting");
+				System.out.println("Unable to bind port" + PORT + ", exiting");
 				System.exit(1);
 			}
 	}
