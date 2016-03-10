@@ -35,23 +35,58 @@ public class Connection {
 		ois = new ObjectInputStream(s.getInputStream());
 	}
 	
+	/**
+	 * return the nature of this object. true if it is a server side socket,
+	 * false if it is a client side socket
+	 */
 	public boolean isServer() {
 		return isServer;
 	}
 	
-	public void sendObject(Object obj) throws IOException {
-		oos.writeObject(obj);
+	/**
+	 * Send the file name list to the remote host. Return true if
+	 * nothing wrong happens;It throws IOExceptoin is caught for broken pipe
+	 */
+	public void sendFileNameList(Vector<String> fileNameList) throws IOException{
+		oos.writeObject(fileNameList);
 	}
 	
-	public Object receiveObject() {
-		Object received = null;
-		try {
-			received = ois.readObject();
-		} catch (ClassNotFoundException | IOException e) {
-			System.out.println(e.getMessage());
-		}
-		
-		return received;
+	/**
+	 * Send the file list to the remote host. Return true if
+	 * nothing wrong happens; It throws IOExceptoin for broken pipe
+	 */
+	public void sendFileList(Vector<File> fileList) throws IOException {
+			oos.writeObject(fileList);
+	}
+	
+	/**
+	 * Reads file name list from the pipe. Returns all the String objects 
+	 * received from the pipe. Throws Exception when the pipe is broken or 
+	 */
+	public Vector<String> receivedFileNameList() throws IOException, ClassNotFoundException{
+		Vector<String> fileNameList = new Vector<String>();
+		Object received = ois.readObject();
+		if (received instanceof Vector<?>)
+			for (Object o: (Vector<?>) received)
+				if (o instanceof String)
+					fileNameList.add((String) o);
+					
+		return fileNameList;	
+	}
+	
+	/**
+	 * Reads file list from the pipe. Returns all the File objects 
+	 * received from the pipe. Throws Exception when the pipe is broken or 
+	 */
+	public Vector<File> receivedFileList() throws IOException, ClassNotFoundException{
+		Vector<File> fileList = new Vector<File>();
+		Object received = ois.readObject();
+		if (received instanceof Vector<?>)
+			for (Object o: (Vector<?>) received)
+				if (o instanceof File)
+					fileList.add((File) o);
+					
+		return fileList;	
 	}
 	
 	public String getRemoteAddress() {

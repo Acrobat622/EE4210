@@ -10,13 +10,13 @@ import java.net.*;
 import java.util.Arrays;
 import java.util.Vector;
 
-public class ServerProcess {
+public class FileOperator {
 	private static File path;
 	private Vector<File> fileList;
 	private Vector<String> fileNameList;
     private Connection connection;
 	
-	public ServerProcess(File path, Connection connection) {
+	public FileOperator(File path, Connection connection) {
 		this.connection = connection;
 		this.path = path;
 		this.fileList = new Vector<File>();
@@ -26,6 +26,32 @@ public class ServerProcess {
 	public void getFileList() {
 		this.fileList.addAll(Arrays.asList(path.listFiles()));
 	}
+	
+	/**
+	 * return true if filename list is sent successfully; false if 
+	 * IOException is caught
+	 */
+	public boolean sendFileNameList() {
+		try {
+			connection.sendFileNameList(fileNameList);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	/**
+	 * return true if files are sent successfully; false if IOException is caught
+	 */
+	public boolean sendFileList() {
+		try {
+			connection.sendFileList(fileList);
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
+	
+	
 	
 	public void getFileNameList() {
 		for (File f: fileList) {
