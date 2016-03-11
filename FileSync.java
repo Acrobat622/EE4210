@@ -38,7 +38,8 @@ public class FileSync {
 			connection.sendCommand("SYNC");
 			connection.sendCommand("SENDFILE");
 		} catch (Exception e) {
-			e.printStackTrace();
+			connection.closeConnection();
+			System.out.println("Connection lost");
 		}
 	}
 	
