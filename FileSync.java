@@ -5,6 +5,7 @@
  */
 import java.io.File;
 import java.io.IOException;
+import java.util.Vector;
 
 public class FileSync {
 
@@ -24,11 +25,36 @@ public class FileSync {
 		System.out.println("Connected to " + connection.getRemoteAddress());
 		
 		// stub for non-exiting
-		while (true) {
-			
+		if (connection.isServer()) {
+			while (true) {
+				server();
+		   }
 		}
+		else
+			while (true) {
+				client();
+			}
 	}
 
+	private static void server() {
+		try {
+			connection.sendCommand("Command");
+			connection.sendCommand(null);
+			connection.sendFileNameList(new Vector<String>());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void client() {
+		try {
+			System.out.println("1st: " + connection.receiveCommand());
+			System.out.println("2nd: " + connection.receiveCommand());
+			System.out.println("3nd: " + connection.receiveCommand());
+		} catch (ClassNotFoundException | IOException e) {
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * Creates new connection, whether it is a server or client socket
 	 * If the programme is served as a client and the connection cannot

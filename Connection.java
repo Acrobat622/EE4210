@@ -15,6 +15,7 @@ public class Connection {
     private ServerSocket ss;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
+	
 	// client constructor
 	public Connection(String host, int port) throws IOException {
 			s = new Socket();
@@ -44,16 +45,21 @@ public class Connection {
 	}
 	
 	/**
-	 * Send the file name list to the remote host. Return true if
-	 * nothing wrong happens;It throws IOExceptoin is caught for broken pipe
+	 * Send command to the remote host. It throws IOExceptoin is caught for broken pipe
+	 */
+	public void sendCommand(String command) throws IOException{
+		oos.writeObject(command);
+	}
+	
+	/**
+	 * Send the file name list to the remote host. It throws IOExceptoin is caught for broken pipe
 	 */
 	public void sendFileNameList(Vector<String> fileNameList) throws IOException{
 		oos.writeObject(fileNameList);
 	}
 	
 	/**
-	 * Send the file list to the remote host. Return true if
-	 * nothing wrong happens; It throws IOExceptoin for broken pipe
+	 * Send the file list to the remote host. It throws IOExceptoin for broken pipe
 	 */
 	public void sendFileList(Vector<File> fileList) throws IOException {
 			oos.writeObject(fileList);
@@ -89,10 +95,26 @@ public class Connection {
 		return fileList;	
 	}
 	
+	/**
+	 * Reads the command in string from remote host
+	 */
+	public String receiveCommand() throws IOException, ClassNotFoundException {
+		Object received = ois.readObject();
+		if (received instanceof String)
+			return (String) received;
+		else
+			return "";
+	}
+	/**
+	 * Return the IP of the remote host
+	 */
 	public String getRemoteAddress() {
 		return s.getInetAddress().toString();
 	}
 	
+	/**
+	 * Safely close the connection
+	 */
 	public void closeConnection() {
 		try {
 		    s.close();
