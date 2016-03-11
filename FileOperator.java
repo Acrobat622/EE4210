@@ -35,7 +35,7 @@ public class FileOperator {
 		try {
 			connection.sendFileNameList(fileNameList);
 			return true;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			return false;
 		}
 	}
@@ -46,7 +46,7 @@ public class FileOperator {
 		try {
 			connection.sendFileList(fileList);
 			return true;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			return false;
 		}
 	}
