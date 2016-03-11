@@ -38,8 +38,8 @@ public class FileSync {
 			connection.sendCommand("SYNC");
 			connection.sendCommand("SENDFILE");
 		} catch (Exception e) {
+			System.out.println("Connection lost, closing connection");
 			connection.closeConnection();
-			System.out.println("Connection lost");
 		}
 	}
 	
@@ -50,7 +50,7 @@ public class FileSync {
 			System.out.println("3rd: " + connection.receiveCommand());
 		} catch ( ClassNotFoundException | IOException e) {
 			connection.closeConnection();
-			System.out.println("Connection lost");
+			System.out.println("Connection lost, closing connection");
 		}
 	}
 	/**

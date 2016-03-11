@@ -121,7 +121,7 @@ public class Connection {
 			ois.close();
 		    s.close();
 		} catch (IOException e) {
-			System.out.println("Unable to close connection, probably lost");
+			//System.out.println("Unable to close connection, probably lost");
 		}
 	}
 }
