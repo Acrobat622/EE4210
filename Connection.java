@@ -117,6 +117,8 @@ public class Connection {
 	 */
 	public void closeConnection() {
 		try {
+			oos.close();
+			ois.close();
 		    s.close();
 		} catch (IOException e) {
 			System.out.println("Unable to close connection, probably lost");

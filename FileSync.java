@@ -26,21 +26,17 @@ public class FileSync {
 		
 		// stub for non-exiting
 		if (connection.isServer()) {
-			while (true) {
 				server();
-		   }
 		}
 		else
-			while (true) {
-				client();
-			}
+			client();
 	}
 
 	private static void server() {
 		try {
 			connection.sendCommand("Command");
-			connection.sendCommand(null);
-			connection.sendFileNameList(new Vector<String>());
+			connection.sendCommand("SYNC");
+			connection.sendCommand("SENDFILE");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -50,9 +46,10 @@ public class FileSync {
 		try {
 			System.out.println("1st: " + connection.receiveCommand());
 			System.out.println("2nd: " + connection.receiveCommand());
-			System.out.println("3nd: " + connection.receiveCommand());
+			System.out.println("3rd: " + connection.receiveCommand());
 		} catch (ClassNotFoundException | IOException e) {
-			e.printStackTrace();
+			connection.closeConnection();
+			System.out.println("Connection lost");
 		}
 	}
 	/**
