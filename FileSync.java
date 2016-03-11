@@ -20,7 +20,7 @@ public class FileSync {
 		printWelcomeMessage(args);
 		
 		
-		creaateNewConnection();
+		createNewConnection();
 
 		System.out.println("Connected to " + connection.getRemoteAddress());
 		
@@ -37,7 +37,7 @@ public class FileSync {
 			connection.sendCommand("Command");
 			connection.sendCommand("SYNC");
 			connection.sendCommand("SENDFILE");
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -47,7 +47,7 @@ public class FileSync {
 			System.out.println("1st: " + connection.receiveCommand());
 			System.out.println("2nd: " + connection.receiveCommand());
 			System.out.println("3rd: " + connection.receiveCommand());
-		} catch (ClassNotFoundException | IOException e) {
+		} catch ( ClassNotFoundException | IOException e) {
 			connection.closeConnection();
 			System.out.println("Connection lost");
 		}
@@ -58,7 +58,7 @@ public class FileSync {
 	 * be established after the timeout, it will enter server mode which 
 	 * listens to connection requests
 	 */	 
-	private static void creaateNewConnection() {
+	private static void createNewConnection() {
 		if (!isServer)
 			try {
 			   connection = new Connection(remote, PORT);

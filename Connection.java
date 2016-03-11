@@ -47,21 +47,21 @@ public class Connection {
 	/**
 	 * Send command to the remote host. It throws IOExceptoin is caught for broken pipe
 	 */
-	public void sendCommand(String command) throws IOException{
+	public void sendCommand(String command) throws Exception{
 		oos.writeObject(command);
 	}
 	
 	/**
 	 * Send the file name list to the remote host. It throws IOExceptoin is caught for broken pipe
 	 */
-	public void sendFileNameList(Vector<String> fileNameList) throws IOException{
+	public void sendFileNameList(Vector<String> fileNameList) throws Exception{
 		oos.writeObject(fileNameList);
 	}
 	
 	/**
 	 * Send the file list to the remote host. It throws IOExceptoin for broken pipe
 	 */
-	public void sendFileList(Vector<File> fileList) throws IOException {
+	public void sendFileList(Vector<File> fileList) throws Exception {
 			oos.writeObject(fileList);
 	}
 	
