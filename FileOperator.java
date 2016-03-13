@@ -6,8 +6,6 @@
  */
 
 import java.io.*;
-import java.io.FileOutputStream;
-import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.Arrays;
 import java.util.Vector;
@@ -28,14 +26,23 @@ public class FileOperator {
 		}
 	}
 	
+	/**
+	 * Get the list of files in current directory
+	 */
 	public Vector<File> getFileList() {
 		return fileList;
 	}
 	
+	/**
+	 * Get the list of names of files in current directory
+	 */
 	public Vector<String> getFileNameList() {
 		return fileNameList;
 	}
 	
+	/**
+	 * Compare the missing files names from another host
+	 */
 	public Vector<String> getMissingFileNameList(Vector<String> remoteFileNameList) {
 		Vector<String> requestedFileNameList = new Vector<String>();
 		requestedFileNameList.addAll(fileNameList);
@@ -43,6 +50,9 @@ public class FileOperator {
 		return requestedFileNameList;
 	}
 	
+	/**
+	 * Prepare the files to be sent to remote
+	 */
 	public Vector<File> prepareRequestedFile(Vector<String> requestedFileName) {
 		Vector<File> preparedFile = new Vector<File>();
 		for (File f: fileList) 
@@ -51,11 +61,22 @@ public class FileOperator {
 		return preparedFile;
 	}
 	
-	public boolean writeFilesToDisk(Vector<File> files) {
-		
-		return true;
+	public boolean writeFilesToDisk(String name, byte[] file) {
+		try {
+			File fout = new File(this.path + File.separator + name);
+			FileOutputStream fos = new FileOutputStream(fout);
+			fos.write(file);
+			fos.close();
+			return true;
+		} catch (IOException ioe) {
+			System.err.print("Error writing file " + name);
+			return false;
+		}
 	}
 	
+	/**
+	 * get the path of directory
+	 */
 	public String getPath() {
 		return path.toString();
 	}

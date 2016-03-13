@@ -1,5 +1,5 @@
 /**
- * Connectionn with other server
+ * Connection with other server
  */
 
 import java.io.*;
@@ -15,19 +15,22 @@ public class Connection {
     private ServerSocket ss;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
+	private FileOperator fo;
 	
 	// client constructor
-	public Connection(String host, int port) throws IOException {
-			s = new Socket();
-			s.connect(new InetSocketAddress(host, port)/*, TIMEOUT*/);
-			isServer = false;
-			//s.setSoTimeout(TIMEOUT);
-			oos = new ObjectOutputStream(s.getOutputStream());
-			ois = new ObjectInputStream(s.getInputStream());
+	public Connection(String host, int port, FileOperator fo) throws IOException {
+		this.fo = fo;
+		s = new Socket();
+		s.connect(new InetSocketAddress(host, port)/*, TIMEOUT*/);
+		isServer = false;
+		//s.setSoTimeout(TIMEOUT);
+		oos = new ObjectOutputStream(s.getOutputStream());
+		ois = new ObjectInputStream(s.getInputStream());
 	}
 	
 	// server constructor
-	public Connection(int port) throws IOException {
+	public Connection(int port, FileOperator fo) throws IOException {
+		this.fo = fo;
 		ss = new ServerSocket(port);
 		s = ss.accept();
 		//s.setSoTimeout(TIMEOUT);   //  timeout for connection
@@ -109,10 +112,7 @@ public class Connection {
 			byte[] bytes = new byte[(int) size];
 			ois.read(bytes);
 			
-			File fout = new File(path + File.separator + name);
-			FileOutputStream fos = new FileOutputStream(fout);
-			fos.write(bytes);
-			fos.close();
+			fo.writeFilesToDisk(name, bytes);
 		}
 					
 		return 0;	

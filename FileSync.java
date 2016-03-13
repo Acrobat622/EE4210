@@ -80,11 +80,11 @@ public class FileSync {
 							
 				}
 			} catch (IOException e) {
-				System.out.println("Connection lost, closing connection");
+				System.err.println("Connection lost, closing connection");
+				alive = false;
 			} catch (ClassNotFoundException cnfe) {
 				
-			} finally {
-			}
+			} 
 		}
 	}
 	
@@ -100,8 +100,10 @@ public class FileSync {
 				serverMissing = serverMissing & missingFileNameList.remove(s);
 			connection.sendFileNameList(missingFileNameList);
 			
-			connection.sendCommand(SYNC);
-			connection.receivedFiles(path);
+			if (!missingFileNameList.isEmpty()) {
+				connection.sendCommand(SYNC);
+				connection.receivedFiles(path);
+			}
 			
 			if (serverMissing) {
 				connection.sendCommand(EXIT);
