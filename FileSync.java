@@ -56,17 +56,18 @@ public class FileSync {
 
 	private static void server() {
 		boolean alive = true;
+		Vector<String> requestedFileNameList = new Vector<String>();
 		while (alive) {
 			try {
 				String command = connection.receiveCommand();
-				Vector<String> requestedFileNameList = new Vector<String>();
 				switch (command) {
 					case REQUEST:
 						connection.sendFileNameList(fileNameList);
 						requestedFileNameList.addAll(connection.receivedFileNameList());
 						break;
 					case SYNC:
-						connection.sendFileList(fo.prepareRequestedFile(requestedFileNameList));
+						Vector<File> requestedFileList = fo.prepareRequestedFile(requestedFileNameList);
+						connection.sendFileList(requestedFileList);
 						break;
 					case SWITCH:
 						client();
@@ -82,7 +83,6 @@ public class FileSync {
 			} catch (ClassNotFoundException cnfe) {
 				
 			} finally {
-				
 			}
 		}
 	}
