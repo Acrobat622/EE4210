@@ -17,7 +17,7 @@ public class Connection {
 	// client constructor
 	public Connection(String host, int port) throws IOException {
 			s = new Socket();
-			s.connect(new InetSocketAddress(host, port), TIMEOUT);
+			s.connect(new InetSocketAddress(host, port)/*, TIMEOUT*/);
 			isServer = false;
 			//s.setSoTimeout(TIMEOUT);
 			oos = new ObjectOutputStream(s.getOutputStream());
@@ -28,7 +28,7 @@ public class Connection {
 	public Connection(int port) throws IOException {
 		ss = new ServerSocket(port);
 		s = ss.accept();
-		s.setSoTimeout(TIMEOUT);   //  timeout for connection
+		//s.setSoTimeout(TIMEOUT);   //  timeout for connection
 		isServer = true;
 		oos = new ObjectOutputStream(s.getOutputStream());
 		ois = new ObjectInputStream(s.getInputStream());

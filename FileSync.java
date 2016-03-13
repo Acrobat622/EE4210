@@ -80,6 +80,7 @@ public class FileSync {
 			} catch (IOException e) {
 				System.out.println("Connection lost, closing connection");
 				connection.closeConnection();
+				alive = false;
 			} catch (ClassNotFoundException cnfe) {
 				
 			}
@@ -110,7 +111,7 @@ public class FileSync {
 			}
 		} catch (IOException e) {
 			connection.closeConnection();
-			System.out.println("Connection lost during receiving file name list, closing connection");
+			System.out.println("Connection lost when receiving file name list, closing connection");
 		} catch (ClassNotFoundException cnfe) {
 			
 		} finally {
