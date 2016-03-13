@@ -72,6 +72,7 @@ public class FileSync {
 						break;
 					case SEND:
 						connection.sendAck();
+						connection.receivedFiles();
 						break;
 					case EXIT:
 						connection.closeConnection();
@@ -108,7 +109,7 @@ public class FileSync {
 			
 			if (!localMissingFileNameList.isEmpty()) {
 				connection.sendCommand(SYNC);
-				connection.receivedFiles(path);
+				connection.receivedFiles();
 			}
 			
 			if (serverMissing) {

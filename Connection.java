@@ -105,7 +105,7 @@ public class Connection {
 	 * Throws Exception when the pipe is broken
 	 */
 	@SuppressWarnings("finally")
-	public int receivedFiles(File path) {
+	public int receivedFiles() {
 		int fileCount = 0;
 		try {
 			Object fileNumber = ois.readObject();
