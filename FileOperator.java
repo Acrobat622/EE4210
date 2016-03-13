@@ -6,6 +6,8 @@
  */
 
 import java.io.*;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.Arrays;
 import java.util.Vector;
@@ -47,6 +49,11 @@ public class FileOperator {
 			if (requestedFileName.contains(f.getName()))
 				preparedFile.add(f);
 		return preparedFile;
+	}
+	
+	public boolean writeFilesToDisk(Vector<File> files) {
+		
+		return true;
 	}
 	
 	public String getPath() {
