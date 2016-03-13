@@ -4,10 +4,12 @@
 
 import java.io.*;
 import java.net.*;
+import java.nio.file.Files;
 import java.util.*;
 
 public class Connection {
 	private static final int TIMEOUT = 1000;
+	private static final String ACK = "ACK";
 	private static boolean isServer;
     private Socket s;
     private ServerSocket ss;
@@ -57,10 +59,22 @@ public class Connection {
 	}
 	
 	/**
-	 * Send the file list to the remote host. It throws IOExceptoin for broken pipe
+	 * Send the files to the remote host. It throws IOExceptoin for broken pipe
+	 * An ACK is required for each file sent. It sets the timeout for receiving 
+	 * ACK to 1s
 	 */
-	public void sendFileList(Vector<File> fileList) throws IOException {
-			oos.writeObject(fileList);
+	public void sendFileList(Vector<File> fileList) throws IOException, ClassNotFoundException {
+			s.setSoTimeout(TIMEOUT);
+			oos.writeInt(fileList.size());  // send how many files are to be sent
+			
+			for (File f: fileList) {
+				byte[] fileBytes = Files.readAllBytes(f.toPath());
+				oos.write(fileBytes);
+				sendAck();
+				if (!recvAck())
+					break;
+			}
+			s.setSoTimeout(0); // reset timeout
 	}
 	
 	/**
@@ -80,17 +94,16 @@ public class Connection {
 	
 	/**
 	 * Reads file list from the pipe. Returns all the File objects 
-	 * received from the pipe. Throws Exception when the pipe is broken or 
+	 * received from the pipe and write them to disk. 
+	 * Throws Exception when the pipe is broken
 	 */
-	public Vector<File> receivedFileList() throws IOException, ClassNotFoundException{
-		Vector<File> fileList = new Vector<File>();
-		Object received = ois.readObject();
-		if (received instanceof Vector<?>)
-			for (Object o: (Vector<?>) received)
-				if (o instanceof File)
-					fileList.add((File) o);
+	public int receivedFileList() throws IOException, ClassNotFoundException{
+		int size = ois.readInt();
+		for (int i = 0; i < size; i++) {
+			ois.readByte();
+		}
 					
-		return fileList;	
+		return 0;	
 	}
 	
 	/**
@@ -108,6 +121,24 @@ public class Connection {
 	 */
 	public String getRemoteAddress() {
 		return s.getInetAddress().toString();
+	}
+	
+	/**
+	 * Send ACK to remote
+	 */
+	private void sendAck() throws IOException {
+		oos.writeObject(ACK);
+	}
+	
+	/**
+	 * Read and check if ACK is received
+	 */
+	private boolean recvAck() throws IOException, ClassNotFoundException {
+		Object response = ois.readObject();
+		if (response.toString().equals(ACK))
+			return true;
+		else
+			return false;
 	}
 	
 	/**
