@@ -8,8 +8,6 @@ import java.util.*;
 
 public class Connection {
 	private static final int TIMEOUT = 1000;
-	private static String host;
-	private static int port;
 	private static boolean isServer;
     private Socket s;
     private ServerSocket ss;
@@ -47,21 +45,21 @@ public class Connection {
 	/**
 	 * Send command to the remote host. It throws IOExceptoin is caught for broken pipe
 	 */
-	public void sendCommand(String command) throws Exception{
+	public void sendCommand(String command) throws IOException{
 		oos.writeObject(command);
 	}
 	
 	/**
 	 * Send the file name list to the remote host. It throws IOExceptoin is caught for broken pipe
 	 */
-	public void sendFileNameList(Vector<String> fileNameList) throws Exception{
+	public void sendFileNameList(Vector<String> fileNameList) throws IOException{
 		oos.writeObject(fileNameList);
 	}
 	
 	/**
 	 * Send the file list to the remote host. It throws IOExceptoin for broken pipe
 	 */
-	public void sendFileList(Vector<File> fileList) throws Exception {
+	public void sendFileList(Vector<File> fileList) throws IOException {
 			oos.writeObject(fileList);
 	}
 	

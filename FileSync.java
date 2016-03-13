@@ -77,21 +77,42 @@ public class FileSync {
 						alive = false;	
 							
 				}
-			} catch (Exception e) {
+			} catch (IOException e) {
 				System.out.println("Connection lost, closing connection");
 				connection.closeConnection();
+			} catch (ClassNotFoundException cnfe) {
+				
 			}
 		}
 	}
 	
 	private static void client() {
+		Vector<String> missingFileNameList = new Vector<String>();
+		Vector<File> missingFile = new Vector<File>();
+		boolean serverMissing = false;
 		try {
-			fileNameList = connection.receivedFileNameList();
-			System.out.println("There are " + fileNameList.size() + " files on remote host");
-			System.out.println(fileNameList);
-		} catch ( ClassNotFoundException | IOException e) {
+			connection.sendCommand(REQUEST);
+			missingFileNameList.addAll(connection.receivedFileNameList());
+			//missingFileNameList.removeAll(fo.getFileNameList());
+			for (String s: fo.getFileNameList()) 
+				serverMissing = serverMissing | missingFileNameList.remove(s);
+			
+			connection.sendCommand(SYNC);
+			connection.sendFileNameList(missingFileNameList);
+			
+			if (serverMissing) {
+				connection.sendCommand(SWITCH);
+				server();
+			}
+			else {
+				connection.sendCommand(EXIT);
+				connection.closeConnection();
+			}
+		} catch (IOException e) {
 			connection.closeConnection();
-			System.out.println("Connection lost, closing connection");
+			System.out.println("Connection lost during receiving file name list, closing connection");
+		} catch (ClassNotFoundException cnfe) {
+			
 		}
 	}
 
