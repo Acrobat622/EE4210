@@ -34,7 +34,8 @@ public class FileSync {
 					createNewConnection(remote);
 				System.out.println("Connected to " + connection.getRemoteAddress());
 			} catch (IOException e) {
-			
+				System.out.println("Unable to connect to " + remote +" at port " + PORT );
+			    System.exit(1);
 			}
 
 		
@@ -128,9 +129,10 @@ public class FileSync {
 	 */	 
 	private static void createNewConnection(String remote) throws IOException{
 		try {
-			   connection = new Connection(remote, PORT);
+			   connection = new Connection(remote, PORT, fo);
 			} catch (IOException e) {
-				System.out.println("Unable to connect to " + remote +" at port " + PORT );
+				//System.out.println("Unable to connect to " + remote +" at port " + PORT );
+				throw new IOException("No route to host");
 			}
 	}
 	/**
@@ -139,7 +141,7 @@ public class FileSync {
 	 */	 
 	private static void createNewConnection() throws IOException{
 		try {
-			connection = new Connection(PORT);
+			connection = new Connection(PORT, fo);
 		} catch (Exception e) {
 			System.out.println("Unable to bind port " + PORT + ", exiting");
 		}
