@@ -153,6 +153,10 @@ public class Connection {
 			return false;
 	}
 	
+	public void flush() throws IOException {
+		oos.flush();
+	}
+	
 	/**
 	 * Safely close the connection
 	 */

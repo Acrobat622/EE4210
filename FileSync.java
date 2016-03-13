@@ -108,6 +108,7 @@ public class FileSync {
 			}
 			else {
 				connection.sendCommand(SWITCH);
+				connection.flush();
 				server();
 			}
 		} catch (IOException e) {
