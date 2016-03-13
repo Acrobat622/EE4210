@@ -35,6 +35,7 @@ public class FileSync {
 						System.out.println("Working as server at port "+ PORT +". Press Ctrl^C to quit");
 						createServerSocket();
 						System.out.println("Connected to " + connection.getRemoteAddress());
+						server();
 					} catch (IOException e) {
 						System.out.println("Unable to bind port " + PORT +". Is another instance using?" );
 						continue;
@@ -47,6 +48,7 @@ public class FileSync {
 					try {
 						createClientSocket(command);
 						System.out.println("Connected to " + connection.getRemoteAddress());
+						client();
 					}  catch (IOException e) {
 						System.out.println("Unable to connect to " + command +" at port " + PORT );
 						continue;
