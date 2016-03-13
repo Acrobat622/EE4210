@@ -11,7 +11,7 @@ public class FileSync {
 	private static final String SYNC = "SYN";
 	private static final String REQUEST = "REQ";
 	private static final String EXIT = "EXIT";
-	private static final String SWITCH = "SWITCH";
+	private static final String SEND = "SEND";
 	private static final int PORT = 6883;
 	private static boolean isServer = true;
 	private static String remote;
@@ -70,8 +70,8 @@ public class FileSync {
 						Vector<File> requestedFileList = fo.prepareRequestedFile(requestedFileNameList);
 						connection.sendFiles(requestedFileList);
 						break;
-					case SWITCH:
-						client();
+					case SEND:
+						connection.sendAck();
 						break;
 					case EXIT:
 						connection.closeConnection();
@@ -83,24 +83,30 @@ public class FileSync {
 				System.err.println("Connection lost, closing connection");
 				alive = false;
 			} catch (ClassNotFoundException cnfe) {
-				
+				System.err.println("Error processing data types");
 			} 
 		}
 	}
 	
 	private static void client() {
-		Vector<String> missingFileNameList = new Vector<String>();
-		Vector<File> missingFile = new Vector<File>();
+		Vector<String> localMissingFileNameList  = new Vector<String>();
+		Vector<File> localMissingFile = new Vector<File>(); 
+		Vector<File> remoteMissingFileList = new Vector<File>();
 		boolean serverMissing = true;
 		try {
 			connection.sendCommand(REQUEST);
-			missingFileNameList.addAll(connection.receivedFileNameList());
+			localMissingFileNameList.addAll(connection.receivedFileNameList());
 			//missingFileNameList.removeAll(fo.getFileNameList());
-			for (String s: fo.getFileNameList()) 
-				serverMissing = serverMissing & missingFileNameList.remove(s);
-			connection.sendFileNameList(missingFileNameList);
+			for (String s: fo.getFileNameList()) {
+				boolean removed = localMissingFileNameList.remove(s);
+				serverMissing = serverMissing & removed;
+				if (!removed)
+					remoteMissingFileList.add(new File(fo.getPath() + File.separator + s));
+				System.out.println(remoteMissingFileList);
+			}
+			connection.sendFileNameList(localMissingFileNameList);
 			
-			if (!missingFileNameList.isEmpty()) {
+			if (!localMissingFileNameList.isEmpty()) {
 				connection.sendCommand(SYNC);
 				connection.receivedFiles(path);
 			}
@@ -110,18 +116,20 @@ public class FileSync {
 				connection.closeConnection();
 			}
 			else {
-				connection.sendCommand(SWITCH);
-				connection.flush();
-				server();
+				connection.sendCommand(SEND);
+				if (connection.recvAck())
+					connection.sendFiles(remoteMissingFileList);
+				else
+					connection.closeConnection();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 			connection.closeConnection();
-			System.out.println("Connection lost when receiving file name list, closing connection");
+			System.err.println("Connection lost, closing connection");
 		} catch (ClassNotFoundException cnfe) {
-			
+			System.err.println("Error processing data types");
 		} finally {
-			System.out.println("Received " + missingFile.size() + " files from remote");
+			System.out.println("Received " + localMissingFile.size() + " files from remote");
 		}
 	}
 

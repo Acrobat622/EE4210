@@ -104,18 +104,25 @@ public class Connection {
 	 * received from the pipe and write them to disk. 
 	 * Throws Exception when the pipe is broken
 	 */
-	public int receivedFiles(File path) throws IOException, ClassNotFoundException{
-		Object fileNumber = ois.readObject();
-		for (int i = 0; i < (int)fileNumber; i++) {
-			String name = ois.readObject().toString();
-			long size = (long)ois.readObject();
-			byte[] bytes = new byte[(int) size];
-			ois.read(bytes);
+	@SuppressWarnings("finally")
+	public int receivedFiles(File path) {
+		int fileCount = 0;
+		try {
+			Object fileNumber = ois.readObject();
+			for (int i = 0; i < (int)fileNumber; i++) {
+				String name = ois.readObject().toString();
+				long size = (long)ois.readObject();
+				byte[] bytes = new byte[(int) size];
+				ois.read(bytes);
 			
-			fo.writeFilesToDisk(name, bytes);
+				fo.writeFilesToDisk(name, bytes);
+				fileCount++;
+			}
+		} catch (IOException|ClassNotFoundException e) {
+			System.err.println("Error writing file to disk");
+		} finally {
+			return fileCount;	
 		}
-					
-		return 0;	
 	}
 	
 	/**
@@ -138,14 +145,14 @@ public class Connection {
 	/**
 	 * Send ACK to remote
 	 */
-	private void sendAck() throws IOException {
+	public void sendAck() throws IOException {
 		oos.writeObject(ACK);
 	}
 	
 	/**
 	 * Read and check if ACK is received
 	 */
-	private boolean recvAck() throws IOException, ClassNotFoundException {
+	public boolean recvAck() throws IOException, ClassNotFoundException {
 		Object response = ois.readObject();
 		if (response.toString().equals(ACK))
 			return true;
