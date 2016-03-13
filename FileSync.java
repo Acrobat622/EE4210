@@ -23,10 +23,11 @@ public class FileSync {
 		//checkArguments(args);
 		printWelcomeMessage();
 		
+		boolean cont = true;
 		fo = new FileOperator(getWorkingDirectory());
 		fileNameList = fo.getFileNameList();
 		Scanner sc = new Scanner(System.in);
-		while (true) {
+		while (cont) {
 			printInstruction();
 			String command = sc.nextLine().trim();
 			switch (command) {
@@ -44,6 +45,7 @@ public class FileSync {
 				case "exit":
 					System.out.println("Goodbye!");
 					sc.close();
+					cont = false;
 					break;
 				default:
 					try {
