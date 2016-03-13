@@ -11,53 +11,30 @@ import java.util.Arrays;
 import java.util.Vector;
 
 public class FileOperator {
-	private static File path;
+	private File path;
 	private Vector<File> fileList;
 	private Vector<String> fileNameList;
-    private Connection connection;
 	
-	public FileOperator(File path, Connection connection) {
-		this.connection = connection;
-		this.path = path;
+	public FileOperator(String path) {	
+		this.path = new File(path);
 		this.fileList = new Vector<File>();
 		this.fileNameList = new Vector<String>();
-	}
-	
-	public void getFileList() {
-		this.fileList.addAll(Arrays.asList(path.listFiles()));
-	}
-	
-	/**
-	 * return true if filename list is sent successfully; false if 
-	 * IOException is caught
-	 */
-	public boolean sendFileNameList() {
-		try {
-			connection.sendFileNameList(fileNameList);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	/**
-	 * return true if files are sent successfully; false if IOException is caught
-	 */
-	public boolean sendFileList() {
-		try {
-			connection.sendFileList(fileList);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
-	
-	
-	public void getFileNameList() {
+		
+		this.fileList.addAll(Arrays.asList(this.path.listFiles()));
 		for (File f: fileList) {
 			fileNameList.add(f.getName());
 		}
-		
 	}
 	
+	public Vector<File> getFileList() {
+		return fileList;
+	}
+	
+	public Vector<String> getFileNameList() {
+		return fileNameList;
+	}
+	
+	public String getPath() {
+		return path.toString();
+	}
 }

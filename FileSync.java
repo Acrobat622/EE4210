@@ -14,29 +14,37 @@ public class FileSync {
 	private static String remote;
 	private static final File path = new File(FileSync.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 	private static Connection connection;
+	private static FileOperator fo;
+	private static Vector<String> fileNameList = new Vector<String>();
 	
 	public static void main(String[] args) {
 		checkArguments(args);
 		printWelcomeMessage(args);
 		
-		
+		fo = new FileOperator(getWorkingDirectory());
 		createNewConnection();
 
 		System.out.println("Connected to " + connection.getRemoteAddress());
 		
-		// stub for non-exiting
+		fileNameList = fo.getFileNameList();
+		// stub 
 		if (connection.isServer()) {
-				server();
+			server();
 		}
 		else
 			client();
 	}
 
+	/**
+	 * Return the path where the file is running in String
+	 */
+	private static String getWorkingDirectory() {
+		return FileSync.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+	}
+
 	private static void server() {
 		try {
-			connection.sendCommand("Command");
-			connection.sendCommand("SYNC");
-			connection.sendCommand("SENDFILE");
+			connection.sendFileNameList(fileNameList);
 		} catch (Exception e) {
 			System.out.println("Connection lost, closing connection");
 			connection.closeConnection();
@@ -45,9 +53,8 @@ public class FileSync {
 	
 	private static void client() {
 		try {
-			System.out.println("1st: " + connection.receiveCommand());
-			System.out.println("2nd: " + connection.receiveCommand());
-			System.out.println("3rd: " + connection.receiveCommand());
+			fileNameList = connection.receivedFileNameList();
+			System.out.println(fileNameList);
 		} catch ( ClassNotFoundException | IOException e) {
 			connection.closeConnection();
 			System.out.println("Connection lost, closing connection");
