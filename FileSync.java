@@ -89,30 +89,32 @@ public class FileSync {
 	private static void client() {
 		Vector<String> missingFileNameList = new Vector<String>();
 		Vector<File> missingFile = new Vector<File>();
-		boolean serverMissing = false;
+		boolean serverMissing = true;
 		try {
 			connection.sendCommand(REQUEST);
 			missingFileNameList.addAll(connection.receivedFileNameList());
 			//missingFileNameList.removeAll(fo.getFileNameList());
 			for (String s: fo.getFileNameList()) 
-				serverMissing = serverMissing | missingFileNameList.remove(s);
+				serverMissing = serverMissing & missingFileNameList.remove(s);
 			
 			connection.sendCommand(SYNC);
 			connection.sendFileNameList(missingFileNameList);
-			
+			missingFile.addAll(connection.receivedFileList());
 			if (serverMissing) {
-				connection.sendCommand(SWITCH);
-				server();
-			}
-			else {
 				connection.sendCommand(EXIT);
 				connection.closeConnection();
+			}
+			else {
+				connection.sendCommand(SWITCH);
+				server();
 			}
 		} catch (IOException e) {
 			connection.closeConnection();
 			System.out.println("Connection lost during receiving file name list, closing connection");
 		} catch (ClassNotFoundException cnfe) {
 			
+		} finally {
+			System.out.println("Received " + missingFile.size() + " files from remote");
 		}
 	}
 
