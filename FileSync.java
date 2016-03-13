@@ -32,11 +32,11 @@ public class FileSync {
 					createNewConnection();
 				else
 					createNewConnection(remote);
+				System.out.println("Connected to " + connection.getRemoteAddress());
 			} catch (IOException e) {
 			
 			}
 
-		System.out.println("Connected to " + connection.getRemoteAddress());
 		
 		// stub 
 		if (connection.isServer()) {
@@ -63,7 +63,7 @@ public class FileSync {
 				switch (command) {
 					case REQUEST:
 						connection.sendFileNameList(fileNameList);
-						requestedFileNameList = connection.receivedFileNameList();
+						requestedFileNameList.addAll(connection.receivedFileNameList());
 						break;
 					case SYNC:
 						connection.sendFileList(fo.prepareRequestedFile(requestedFileNameList));
@@ -79,10 +79,11 @@ public class FileSync {
 				}
 			} catch (IOException e) {
 				System.out.println("Connection lost, closing connection");
-				connection.closeConnection();
-				alive = false;
 			} catch (ClassNotFoundException cnfe) {
 				
+			} finally {
+				alive = false;
+				connection.closeConnection();
 			}
 		}
 	}
