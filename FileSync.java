@@ -1,6 +1,7 @@
 /**
  * The main class for file synchronization
- * 
+ * It allows user to specify which mode to enter (server or client)
+ * and runs the respective methods
  *
  */
 import java.io.File;
@@ -14,8 +15,6 @@ public class FileSync {
 	private static final String EXIT = "EXIT";
 	private static final String SEND = "SEND";
 	private static final int PORT = 6883;
-	private static boolean isServer = true;
-	private static final File path = new File(FileSync.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 	private static Connection connection;
 	private static FileOperator fo;
 	private static Vector<String> fileNameList = new Vector<String>();
@@ -44,6 +43,7 @@ public class FileSync {
 					break;
 				case "exit":
 					System.out.println("Goodbye!");
+					sc.close();
 					break;
 				default:
 					try {
@@ -56,7 +56,6 @@ public class FileSync {
 					}
 			}
 		}
-
 	}
 
 	/**
@@ -106,7 +105,6 @@ public class FileSync {
 	
 	private static void client() {
 		Vector<String> localMissingFileNameList  = new Vector<String>();
-		Vector<File> localMissingFile = new Vector<File>(); 
 		Vector<File> remoteMissingFileList = new Vector<File>();
 		int localMissing = 0;
 		boolean serverMissing = true;

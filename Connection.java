@@ -1,5 +1,8 @@
 /**
- * Connection with other server
+ * Connection class for establishing connections and exchanging information
+ * The default timeout is 1000ms. That is, if the connection cannot hear anything
+ * if it is requesting data for 1000ms, it will throw an IOException to warn that
+ * the connetion may be lost
  */
 
 import java.io.*;
@@ -23,7 +26,7 @@ public class Connection {
 		s = new Socket();
 		s.connect(new InetSocketAddress(host, port), TIMEOUT);
 		isServer = false;
-		s.setSoTimeout(0);
+		//s.setSoTimeout(0);
 		oos = new ObjectOutputStream(s.getOutputStream());
 		ois = new ObjectInputStream(s.getInputStream());
 	}
@@ -33,7 +36,7 @@ public class Connection {
 		this.fo = fo;
 		ss = new ServerSocket(port);
 		s = ss.accept();
-		//s.setSoTimeout(TIMEOUT);   //  timeout for connection
+		s.setSoTimeout(TIMEOUT);   //  timeout for connection
 		isServer = true;
 		oos = new ObjectOutputStream(s.getOutputStream());
 		ois = new ObjectInputStream(s.getInputStream());

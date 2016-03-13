@@ -1,12 +1,11 @@
 /**
- * The Server process of file synchronization
- * Server process awaits and establishes the coonection with a
- * remote host, collects the files in its folder, send file names 
- * to the client host, send files that client host. 
+ * The file operations on the disk
+ * It reports what files are on the disk, prepare the 
+ * list of files to be sent and save the files received to
+ * local disk
  */
 
 import java.io.*;
-import java.net.*;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -61,6 +60,10 @@ public class FileOperator {
 		return preparedFile;
 	}
 	
+	/**
+	 * Save the file in byte string to disk with the file name given
+	 * Return true if the file is successfully written, otherwise return false
+	 */
 	public boolean writeFilesToDisk(String name, byte[] file) {
 		try {
 			File fout = new File(this.path + File.separator + name);
