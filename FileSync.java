@@ -72,7 +72,7 @@ public class FileSync {
 						break;
 					case SEND:
 						connection.sendAck();
-						connection.receivedFiles();
+						connection.receiveFiles();
 						break;
 					case EXIT:
 						connection.closeConnection();
@@ -103,13 +103,13 @@ public class FileSync {
 				serverMissing = serverMissing & removed;
 				if (!removed)
 					remoteMissingFileList.add(new File(fo.getPath() + File.separator + s));
-				System.out.println(remoteMissingFileList);
+				//System.out.println(remoteMissingFileList);
 			}
 			connection.sendFileNameList(localMissingFileNameList);
 			
 			if (!localMissingFileNameList.isEmpty()) {
 				connection.sendCommand(SYNC);
-				connection.receivedFiles();
+				connection.receiveFiles();
 			}
 			
 			if (serverMissing) {
@@ -118,10 +118,11 @@ public class FileSync {
 			}
 			else {
 				connection.sendCommand(SEND);
-				if (connection.recvAck())
+				connection.flush();
+				//if (connection.recvAck())
 					connection.sendFiles(remoteMissingFileList);
-				else
-					connection.closeConnection();
+				//else
+				//	connection.closeConnection();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

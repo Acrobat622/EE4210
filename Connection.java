@@ -92,9 +92,9 @@ public class Connection {
 				oos.writeObject(f.length()); // send the size of file
 				byte[] fileBytes = Files.readAllBytes(f.toPath());
 				oos.write(fileBytes);
-				//sendAck();
-				//if (!recvAck())
-					//break;
+				
+				if (!recvAck())
+					break;
 			}
 			//s.setSoTimeout(0); // reset timeout
 	}
@@ -105,7 +105,7 @@ public class Connection {
 	 * Throws Exception when the pipe is broken
 	 */
 	@SuppressWarnings("finally")
-	public int receivedFiles() {
+	public int receiveFiles() {
 		int fileCount = 0;
 		try {
 			Object fileNumber = ois.readObject();
@@ -117,6 +117,7 @@ public class Connection {
 			
 				fo.writeFilesToDisk(name, bytes);
 				fileCount++;
+				sendAck();
 			}
 		} catch (IOException|ClassNotFoundException e) {
 			System.err.println("Error writing file to disk");
