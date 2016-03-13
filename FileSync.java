@@ -111,6 +111,7 @@ public class FileSync {
 				server();
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			connection.closeConnection();
 			System.out.println("Connection lost when receiving file name list, closing connection");
 		} catch (ClassNotFoundException cnfe) {

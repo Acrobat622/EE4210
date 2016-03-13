@@ -82,11 +82,11 @@ public class Connection {
 	 */
 	public void sendFiles(Vector<File> fileList) throws IOException, ClassNotFoundException {
 			//s.setSoTimeout(TIMEOUT);
-			oos.writeInt(fileList.size());  // send how many files are to be sent
+			oos.writeObject(fileList.size());  // send how many files are to be sent
 			
 			for (File f: fileList) {
 				oos.writeObject(f.getName());  // send the name of file
-				oos.writeLong(f.length()); // send the size of file
+				oos.writeObject(f.length()); // send the size of file
 				byte[] fileBytes = Files.readAllBytes(f.toPath());
 				oos.write(fileBytes);
 				//sendAck();
@@ -102,10 +102,10 @@ public class Connection {
 	 * Throws Exception when the pipe is broken
 	 */
 	public int receivedFiles(File path) throws IOException, ClassNotFoundException{
-		int fileNumber = ois.readInt();
-		for (int i = 0; i < fileNumber; i++) {
+		Object fileNumber = ois.readObject();
+		for (int i = 0; i < (int)fileNumber; i++) {
 			String name = ois.readObject().toString();
-			long size = ois.readLong();
+			long size = (long)ois.readObject();
 			byte[] bytes = new byte[(int) size];
 			ois.read(bytes);
 			
