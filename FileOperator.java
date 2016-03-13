@@ -1,5 +1,5 @@
 /**
- * The Server process of file synchroninzation
+ * The Server process of file synchronization
  * Server process awaits and establishes the coonection with a
  * remote host, collects the files in its folder, send file names 
  * to the client host, send files that client host. 

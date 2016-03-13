@@ -54,6 +54,7 @@ public class FileSync {
 	private static void client() {
 		try {
 			fileNameList = connection.receivedFileNameList();
+			System.out.println("There are " + fileNameList.size() + "files on remote host");
 			System.out.println(fileNameList);
 		} catch ( ClassNotFoundException | IOException e) {
 			connection.closeConnection();
