@@ -82,8 +82,7 @@ public class FileSync {
 			} catch (ClassNotFoundException cnfe) {
 				
 			} finally {
-				alive = false;
-				connection.closeConnection();
+				
 			}
 		}
 	}
@@ -98,9 +97,9 @@ public class FileSync {
 			//missingFileNameList.removeAll(fo.getFileNameList());
 			for (String s: fo.getFileNameList()) 
 				serverMissing = serverMissing & missingFileNameList.remove(s);
+			connection.sendFileNameList(missingFileNameList);
 			
 			connection.sendCommand(SYNC);
-			connection.sendFileNameList(missingFileNameList);
 			missingFile.addAll(connection.receivedFileList());
 			if (serverMissing) {
 				connection.sendCommand(EXIT);
