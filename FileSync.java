@@ -28,6 +28,7 @@ public class FileSync {
 		fileNameList = fo.getFileNameList();
 		Scanner sc = new Scanner(System.in);
 		while (true) {
+			printInstruction();
 			String command = sc.nextLine().trim();
 			switch (command) {
 				case "":
@@ -107,6 +108,7 @@ public class FileSync {
 		Vector<String> localMissingFileNameList  = new Vector<String>();
 		Vector<File> localMissingFile = new Vector<File>(); 
 		Vector<File> remoteMissingFileList = new Vector<File>();
+		int localMissing = 0;
 		boolean serverMissing = true;
 		try {
 			connection.sendCommand(REQUEST);
@@ -119,6 +121,7 @@ public class FileSync {
 					remoteMissingFileList.add(new File(fo.getPath() + File.separator + s));
 				//System.out.println(remoteMissingFileList);
 			}
+			localMissing = localMissingFileNameList.size();
 			connection.sendFileNameList(localMissingFileNameList);
 			
 			if (!localMissingFileNameList.isEmpty()) {
@@ -144,7 +147,7 @@ public class FileSync {
 		} catch (ClassNotFoundException cnfe) {
 			System.err.println("Error processing data types");
 		} finally {
-			System.out.println("Received " + localMissingFile.size() + " files from remote");
+			System.out.println("Received " + localMissing + " files from remote");
 			System.out.println("Sent " + remoteMissingFileList.size() + " files to remote");
 		}
 	}
@@ -176,9 +179,13 @@ public class FileSync {
 	private static void printWelcomeMessage() {
 	   System.out.println("Welcome to File Sync.");
 	   System.out.println("This programme will try to synchronize the files in current directory with another host");	
-	   System.out.println("Press Enter without entering enters server mode");
-	   System.out.println("Type remote host IP or hostname to sync file with another host");
-	   System.out.println("Type 'exit' to quit");
+	}
+
+	private static void printInstruction() {
+		System.out.println();
+		System.out.println("Press Enter without entering anything or leaving blank enters server mode");
+		System.out.println("Type remote host IP or hostname to sync file with another host");
+	    System.out.println("Type 'exit' to quit");
 	}
 
 }
