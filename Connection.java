@@ -21,9 +21,9 @@ public class Connection {
 	public Connection(String host, int port, FileOperator fo) throws IOException {
 		this.fo = fo;
 		s = new Socket();
-		s.connect(new InetSocketAddress(host, port)/*, TIMEOUT*/);
+		s.connect(new InetSocketAddress(host, port), TIMEOUT);
 		isServer = false;
-		//s.setSoTimeout(TIMEOUT);
+		s.setSoTimeout(0);
 		oos = new ObjectOutputStream(s.getOutputStream());
 		ois = new ObjectInputStream(s.getInputStream());
 	}

@@ -6,6 +6,7 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.Scanner;
 
 public class FileSync {
 	private static final String SYNC = "SYN";
@@ -14,38 +15,45 @@ public class FileSync {
 	private static final String SEND = "SEND";
 	private static final int PORT = 6883;
 	private static boolean isServer = true;
-	private static String remote;
 	private static final File path = new File(FileSync.class.getProtectionDomain().getCodeSource().getLocation().getPath());
 	private static Connection connection;
 	private static FileOperator fo;
 	private static Vector<String> fileNameList = new Vector<String>();
 	
 	public static void main(String[] args) {
-		checkArguments(args);
-		printWelcomeMessage(args);
+		//checkArguments(args);
+		printWelcomeMessage();
 		
 		fo = new FileOperator(getWorkingDirectory());
 		fileNameList = fo.getFileNameList();
-		//while (true) {
-			try {
-				if (isServer)
-					createNewConnection();
-				else
-					createNewConnection(remote);
-				System.out.println("Connected to " + connection.getRemoteAddress());
-			} catch (IOException e) {
-				System.out.println("Unable to connect to " + remote +" at port " + PORT );
-			    System.exit(1);
+		Scanner sc = new Scanner(System.in);
+		while (true) {
+			String command = sc.nextLine().trim();
+			switch (command) {
+				case "":
+					try {
+						System.out.println("Working as server at port "+ PORT +". Press Ctrl^C to quit");
+						createServerSocket();
+						System.out.println("Connected to " + connection.getRemoteAddress());
+					} catch (IOException e) {
+						System.out.println("Unable to bind port " + PORT +". Is another instance using?" );
+						continue;
+					}
+					break;
+				case "exit":
+					System.out.println("Goodbye!");
+					break;
+				default:
+					try {
+						createClientSocket(command);
+						System.out.println("Connected to " + connection.getRemoteAddress());
+					}  catch (IOException e) {
+						System.out.println("Unable to connect to " + command +" at port " + PORT );
+						continue;
+					}
 			}
-
-		
-		// stub 
-		if (connection.isServer()) {
-			server();
 		}
-		else
-			client();
-		//}
+
 	}
 
 	/**
@@ -143,7 +151,7 @@ public class FileSync {
 	 * Creates new server connection  specifying the remote address
 	 * If the remote host is unreachable, it will throw exception 
 	 */	 
-	private static void createNewConnection(String remote) throws IOException{
+	private static void createClientSocket(String remote) throws IOException{
 		try {
 			   connection = new Connection(remote, PORT, fo);
 			} catch (IOException e) {
@@ -155,7 +163,7 @@ public class FileSync {
 	 * Creates new server connection without specifying the remote address
 	 * If the remote host is unreachable, it will throw exception 
 	 */	 
-	private static void createNewConnection() throws IOException{
+	private static void createServerSocket() throws IOException{
 		try {
 			connection = new Connection(PORT, fo);
 		} catch (Exception e) {
@@ -163,25 +171,12 @@ public class FileSync {
 		}
 	}
 
-	private static void printWelcomeMessage(String[] args) {
+	private static void printWelcomeMessage() {
 	   System.out.println("Welcome to File Sync.");
 	   System.out.println("This programme will try to synchronize the files in current directory with another host");	
-	   if (isServer) {
-		   System.out.println("No remote host is specified.");
-	   	   System.out.println("Serving as server at port " + PORT);
-	   }
-	   else
-		   System.out.println("Remote host is " + remote + ". Trying to establish connetion");
+	   System.out.println("Press Enter without entering enters server mode");
+	   System.out.println("Type remote host IP or hostname to sync file with another host");
+	   System.out.println("Type 'exit' to quit");
 	}
 
-	// check if the programme runs with remote host IP
-    // only takes the first argument as remote host 
-	private static void checkArguments(String[] args) {
-		if (args.length == 0)
-			isServer = true;
-		else {
-			remote = args[0];
-			isServer = false;
-		}
-	}
 }
