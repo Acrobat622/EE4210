@@ -91,8 +91,8 @@ public class Connection {
 				oos.writeObject(f.getName());  // send the name of file
 				oos.writeObject(f.length()); // send the size of file
 				byte[] fileBytes = Files.readAllBytes(f.toPath());
-				oos.write(fileBytes);
-				
+				//oos.write(fileBytes);
+				oos.writeObject(fileBytes);
 				if (!recvAck())
 					break;
 			}

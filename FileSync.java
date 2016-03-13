@@ -56,6 +56,7 @@ public class FileSync {
 	}
 
 	private static void server() {
+		int missing = 0;
 		boolean alive = true;
 		Vector<String> requestedFileNameList = new Vector<String>();
 		while (alive) {
@@ -71,8 +72,8 @@ public class FileSync {
 						connection.sendFiles(requestedFileList);
 						break;
 					case SEND:
-						connection.sendAck();
-						connection.receiveFiles();
+						//connection.sendAck();
+						missing = connection.receiveFiles();
 						break;
 					case EXIT:
 						connection.closeConnection();
@@ -85,7 +86,10 @@ public class FileSync {
 				alive = false;
 			} catch (ClassNotFoundException cnfe) {
 				System.err.println("Error processing data types");
-			} 
+			} finally {
+				System.out.println("Sent " + requestedFileNameList.size() + " files to remote");	
+				System.out.println("Received " + missing + " files from remote");
+			}
 		}
 	}
 	
@@ -118,7 +122,6 @@ public class FileSync {
 			}
 			else {
 				connection.sendCommand(SEND);
-				connection.flush();
 				//if (connection.recvAck())
 					connection.sendFiles(remoteMissingFileList);
 				//else
@@ -132,6 +135,7 @@ public class FileSync {
 			System.err.println("Error processing data types");
 		} finally {
 			System.out.println("Received " + localMissingFile.size() + " files from remote");
+			System.out.println("Sent " + remoteMissingFileList.size() + " files to remote");
 		}
 	}
 
