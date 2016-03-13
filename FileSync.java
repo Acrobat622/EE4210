@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.util.Vector;
 
 public class FileSync {
-
+	private static final String SYNC = "SYN";
+	private static final String REQUEST = "REQ";
+	private static final String EXIT = "EXIT";
+	private static final String SWITCH = "SWITCH";
 	private static final int PORT = 6883;
 	private static boolean isServer = true;
 	private static String remote;
@@ -22,17 +25,26 @@ public class FileSync {
 		printWelcomeMessage(args);
 		
 		fo = new FileOperator(getWorkingDirectory());
-		createNewConnection();
+		fileNameList = fo.getFileNameList();
+		//while (true) {
+			try {
+				if (isServer)
+					createNewConnection();
+				else
+					createNewConnection(remote);
+			} catch (IOException e) {
+			
+			}
 
 		System.out.println("Connected to " + connection.getRemoteAddress());
 		
-		fileNameList = fo.getFileNameList();
 		// stub 
 		if (connection.isServer()) {
 			server();
 		}
 		else
 			client();
+		//}
 	}
 
 	/**
@@ -43,52 +55,67 @@ public class FileSync {
 	}
 
 	private static void server() {
-		try {
-			connection.sendFileNameList(fileNameList);
-		} catch (Exception e) {
-			System.out.println("Connection lost, closing connection");
-			connection.closeConnection();
+		boolean alive = true;
+		while (alive) {
+			try {
+				String command = connection.receiveCommand();
+				Vector<String> requestedFileNameList = new Vector<String>();
+				switch (command) {
+					case REQUEST:
+						connection.sendFileNameList(fileNameList);
+						requestedFileNameList = connection.receivedFileNameList();
+						break;
+					case SYNC:
+						connection.sendFileList(fo.prepareRequestedFile(requestedFileNameList));
+						break;
+					case SWITCH:
+						client();
+						break;
+					case EXIT:
+						connection.closeConnection();
+					default:
+						alive = false;	
+							
+				}
+			} catch (Exception e) {
+				System.out.println("Connection lost, closing connection");
+				connection.closeConnection();
+			}
 		}
 	}
 	
 	private static void client() {
 		try {
 			fileNameList = connection.receivedFileNameList();
-			System.out.println("There are " + fileNameList.size() + "files on remote host");
+			System.out.println("There are " + fileNameList.size() + " files on remote host");
 			System.out.println(fileNameList);
 		} catch ( ClassNotFoundException | IOException e) {
 			connection.closeConnection();
 			System.out.println("Connection lost, closing connection");
 		}
 	}
+
 	/**
-	 * Creates new connection, whether it is a server or client socket
-	 * If the programme is served as a client and the connection cannot
-	 * be established after the timeout, it will enter server mode which 
-	 * listens to connection requests
+	 * Creates new server connection  specifying the remote address
+	 * If the remote host is unreachable, it will throw exception 
 	 */	 
-	private static void createNewConnection() {
-		if (!isServer)
-			try {
+	private static void createNewConnection(String remote) throws IOException{
+		try {
 			   connection = new Connection(remote, PORT);
 			} catch (IOException e) {
 				System.out.println("Unable to connect to " + remote +" at port " + PORT );
-				connection=null;
-				try {
-					System.out.println("Serving as server at port " + PORT);
-				    connection = new Connection(PORT);
-				} catch (IOException e2) {
-					System.out.println("Unable to bind port " + PORT + ", exiting");
-					System.exit(1);
-				}
 			}
-		else
-			try {
-			    connection = new Connection(PORT);
-			} catch (Exception e) {
-				System.out.println("Unable to bind port " + PORT + ", exiting");
-				System.exit(1);
-			}
+	}
+	/**
+	 * Creates new server connection without specifying the remote address
+	 * If the remote host is unreachable, it will throw exception 
+	 */	 
+	private static void createNewConnection() throws IOException{
+		try {
+			connection = new Connection(PORT);
+		} catch (Exception e) {
+			System.out.println("Unable to bind port " + PORT + ", exiting");
+		}
 	}
 
 	private static void printWelcomeMessage(String[] args) {

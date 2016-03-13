@@ -34,6 +34,21 @@ public class FileOperator {
 		return fileNameList;
 	}
 	
+	public Vector<String> getMissingFileNameList(Vector<String> remoteFileNameList) {
+		Vector<String> requestedFileNameList = new Vector<String>();
+		requestedFileNameList.addAll(fileNameList);
+		requestedFileNameList.removeAll(remoteFileNameList);
+		return requestedFileNameList;
+	}
+	
+	public Vector<File> prepareRequestedFile(Vector<String> requestedFileName) {
+		Vector<File> preparedFile = new Vector<File>();
+		for (File f: fileList) 
+			if (requestedFileName.contains(f.getName()))
+				preparedFile.add(f);
+		return preparedFile;
+	}
+	
 	public String getPath() {
 		return path.toString();
 	}
