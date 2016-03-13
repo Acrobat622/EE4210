@@ -67,6 +67,10 @@ public class FileSync {
 		return FileSync.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 	}
 
+	/**
+	 * The server method
+	 * It handles different requests from client and perform respective actions
+	 */
 	private static void server() {
 		int missing = 0;
 		boolean alive = true;
@@ -105,6 +109,12 @@ public class FileSync {
 		}
 	}
 	
+	/**
+	 * The client method
+	 * It sequentially requests the list of files on server,
+	 * request for missing files and send files to server that 
+	 * server does not own. Finally it safely closes the connection
+	 */
 	private static void client() {
 		Vector<String> localMissingFileNameList  = new Vector<String>();
 		Vector<File> remoteMissingFileList = new Vector<File>();
@@ -153,8 +163,8 @@ public class FileSync {
 	}
 
 	/**
-	 * Creates new server connection  specifying the remote address
-	 * If the remote host is unreachable, it will throw exception 
+	 * Creates new client connection  specifying the remote address
+	 * If the remote host is unreachable after timeout, it will throw exception 
 	 */	 
 	private static void createClientSocket(String remote) throws IOException{
 		try {
@@ -166,7 +176,7 @@ public class FileSync {
 	}
 	/**
 	 * Creates new server connection without specifying the remote address
-	 * If the remote host is unreachable, it will throw exception 
+	 * If the port is occupied, it will throw exception
 	 */	 
 	private static void createServerSocket() throws IOException{
 		try {
