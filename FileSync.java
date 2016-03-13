@@ -67,7 +67,7 @@ public class FileSync {
 						break;
 					case SYNC:
 						Vector<File> requestedFileList = fo.prepareRequestedFile(requestedFileNameList);
-						connection.sendFileList(requestedFileList);
+						connection.sendFiles(requestedFileList);
 						break;
 					case SWITCH:
 						client();
@@ -100,7 +100,8 @@ public class FileSync {
 			connection.sendFileNameList(missingFileNameList);
 			
 			connection.sendCommand(SYNC);
-			missingFile.addAll(connection.receivedFileList());
+			connection.receivedFiles(path);
+			
 			if (serverMissing) {
 				connection.sendCommand(EXIT);
 				connection.closeConnection();

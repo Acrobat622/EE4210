@@ -58,24 +58,7 @@ public class Connection {
 		oos.writeObject(fileNameList);
 	}
 	
-	/**
-	 * Send the files to the remote host. It throws IOExceptoin for broken pipe
-	 * An ACK is required for each file sent. It sets the timeout for receiving 
-	 * ACK to 1s
-	 */
-	public void sendFileList(Vector<File> fileList) throws IOException, ClassNotFoundException {
-			s.setSoTimeout(TIMEOUT);
-			oos.writeInt(fileList.size());  // send how many files are to be sent
-			
-			for (File f: fileList) {
-				byte[] fileBytes = Files.readAllBytes(f.toPath());
-				oos.write(fileBytes);
-				sendAck();
-				if (!recvAck())
-					break;
-			}
-			s.setSoTimeout(0); // reset timeout
-	}
+	
 	
 	/**
 	 * Reads file name list from the pipe. Returns all the String objects 
@@ -93,14 +76,43 @@ public class Connection {
 	}
 	
 	/**
+	 * Send the files to the remote host. It throws IOExceptoin for broken pipe
+	 * An ACK is required for each file sent. It sets the timeout for receiving 
+	 * ACK to 1s
+	 */
+	public void sendFiles(Vector<File> fileList) throws IOException, ClassNotFoundException {
+			//s.setSoTimeout(TIMEOUT);
+			oos.writeInt(fileList.size());  // send how many files are to be sent
+			
+			for (File f: fileList) {
+				oos.writeObject(f.getName());  // send the name of file
+				oos.writeLong(f.length()); // send the size of file
+				byte[] fileBytes = Files.readAllBytes(f.toPath());
+				oos.write(fileBytes);
+				//sendAck();
+				//if (!recvAck())
+					//break;
+			}
+			//s.setSoTimeout(0); // reset timeout
+	}
+	
+	/**
 	 * Reads file list from the pipe. Returns all the File objects 
 	 * received from the pipe and write them to disk. 
 	 * Throws Exception when the pipe is broken
 	 */
-	public int receivedFileList() throws IOException, ClassNotFoundException{
-		int size = ois.readInt();
-		for (int i = 0; i < size; i++) {
-			ois.readByte();
+	public int receivedFiles(File path) throws IOException, ClassNotFoundException{
+		int fileNumber = ois.readInt();
+		for (int i = 0; i < fileNumber; i++) {
+			String name = ois.readObject().toString();
+			long size = ois.readLong();
+			byte[] bytes = new byte[(int) size];
+			ois.read(bytes);
+			
+			File fout = new File(path + File.separator + name);
+			FileOutputStream fos = new FileOutputStream(fout);
+			fos.write(bytes);
+			fos.close();
 		}
 					
 		return 0;	
