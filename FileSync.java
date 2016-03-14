@@ -35,10 +35,16 @@ public class FileSync {
 					try {
 						System.out.println("Working as server at port "+ PORT +". Press Ctrl^C to quit");
 						createServerSocket();
-						System.out.println("Connected to " + connection.getRemoteAddress());
-						server();
+						String remote = connection.getRemoteAddress();
+						if (!remote.equals(null)) {
+							System.out.println("Connected to " + remote);
+							server();
+							cont = false;
+						}
+						else
+							System.out.println("The server is not connected");
 					} catch (IOException e) {
-						System.out.println("Unable to bind port " + PORT +". Is another instance using?" );
+						System.out.println("Unable to bind port " + PORT +". Is another instance running?" );
 						continue;
 					}
 					break;
@@ -52,12 +58,14 @@ public class FileSync {
 						createClientSocket(command);
 						System.out.println("Connected to " + connection.getRemoteAddress());
 						client();
+						cont = false;
 					}  catch (IOException e) {
 						System.out.println("Unable to connect to " + command +" at port " + PORT );
 						continue;
 					}
 			}
 		}
+		System.out.println("FileSync is now safely exiting");
 	}
 
 	/**
@@ -80,15 +88,17 @@ public class FileSync {
 				String command = connection.receiveCommand();
 				switch (command) {
 					case REQUEST:
+						connection.sendAck();
 						connection.sendFileNameList(fileNameList);
 						requestedFileNameList.addAll(connection.receivedFileNameList());
 						break;
 					case SYNC:
+						connection.sendAck();
 						Vector<File> requestedFileList = fo.prepareRequestedFile(requestedFileNameList);
 						connection.sendFiles(requestedFileList);
 						break;
 					case SEND:
-						//connection.sendAck();
+						connection.sendAck();
 						missing = connection.receiveFiles();
 						break;
 					case EXIT:
@@ -121,7 +131,9 @@ public class FileSync {
 		int localMissing = 0;
 		boolean serverMissing = true;
 		try {
+			// requesting file list on remote 
 			connection.sendCommand(REQUEST);
+			if (connection.recvAck()) {
 			localMissingFileNameList.addAll(connection.receivedFileNameList());
 			//missingFileNameList.removeAll(fo.getFileNameList());
 			for (String s: fo.getFileNameList()) {
@@ -133,22 +145,30 @@ public class FileSync {
 			}
 			localMissing = localMissingFileNameList.size();
 			connection.sendFileNameList(localMissingFileNameList);
-			
+			}
+			else
+				connection.closeConnection();
+			// receiving files from server
 			if (!localMissingFileNameList.isEmpty()) {
 				connection.sendCommand(SYNC);
-				connection.receiveFiles();
+				if (connection.recvAck())
+				   connection.receiveFiles();
+				else
+					connection.closeConnection();
 			}
 			
 			if (serverMissing) {
+				// close the connection safely
 				connection.sendCommand(EXIT);
 				connection.closeConnection();
 			}
 			else {
+				// send files that server does not own
 				connection.sendCommand(SEND);
-				//if (connection.recvAck())
+				if (connection.recvAck())
 					connection.sendFiles(remoteMissingFileList);
-				//else
-				//	connection.closeConnection();
+				else
+					connection.closeConnection();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
