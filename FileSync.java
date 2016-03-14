@@ -161,19 +161,24 @@ public class FileSync {
 				connection.closeConnection();
 			}
 			
-			if (serverMissing) {
-				// close the connection safely
-				connection.sendCommand(EXIT);
+			try {
+				if (serverMissing) {
+					// close the connection safely
+					connection.sendCommand(EXIT);
+					connection.closeConnection();
+				}
+				else {
+				// send files that server does not own
+					connection.sendCommand(SEND);
+					if (connection.recvAck())
+						connection.sendFiles(remoteMissingFileList);
+					else
+						connection.closeConnection();
+				}
+			} catch(IOException e) {
 				connection.closeConnection();
 			}
-			else {
-				// send files that server does not own
-				connection.sendCommand(SEND);
-				if (connection.recvAck())
-					connection.sendFiles(remoteMissingFileList);
-				else
-					connection.closeConnection();
-			}
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 			connection.closeConnection();
