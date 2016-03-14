@@ -149,12 +149,16 @@ public class FileSync {
 			else
 				connection.closeConnection();
 			// receiving files from server
-			if (!localMissingFileNameList.isEmpty()) {
-				connection.sendCommand(SYNC);
-				if (connection.recvAck())
-				   connection.receiveFiles();
-				else
-					connection.closeConnection();
+			try {
+				if (!localMissingFileNameList.isEmpty()) {
+					connection.sendCommand(SYNC);
+					if (connection.recvAck())
+						connection.receiveFiles();
+					else
+						connection.closeConnection();
+				}
+			} catch (Exception e) {
+				connection.closeConnection();
 			}
 			
 			if (serverMissing) {
