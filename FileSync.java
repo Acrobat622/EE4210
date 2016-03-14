@@ -83,7 +83,7 @@ public class FileSync {
 		int missing = 0;
 		boolean alive = true;
 		Vector<String> requestedFileNameList = new Vector<String>();
-		while (alive) {
+		//while (alive) {
 			try {
 				String command = connection.receiveCommand();
 				switch (command) {
@@ -116,7 +116,7 @@ public class FileSync {
 				System.out.println("Sent " + requestedFileNameList.size() + " files to remote");	
 				System.out.println("Received " + missing + " files from remote");
 			}
-		}
+		
 	}
 	
 	/**
